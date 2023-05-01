@@ -28,3 +28,11 @@ variable "location" {
 variable "gh_repo" {
   type = string
 }
+
+variable "unique" {
+  type = string
+}
+
+variable "environment" {
+  type = string
+}
