@@ -119,13 +119,14 @@ output "resourcegrouptags" {
 
 resource "azurerm_storage_share_file" "example" {
   name             = "connections.json"
+  path             = "site/wwwroot/"
   storage_share_id = data.azurerm_storage_share.share.id
   source           = "../workflows/connections.json"
 }
 
 resource "azurerm_storage_share_directory" "workflows" {
   for_each = fileset("../workflows", "**/workflow.json")
-  name             = split("/", each.value)[0]
+  name             = "site/wwwroot/${split("/", each.value)[0]}"
   storage_account_name = data.azurerm_storage_share.share.storage_account_name
   share_name = data.azurerm_storage_share.share.name
 }
@@ -136,7 +137,7 @@ resource "azurerm_storage_share_file" "workflows" {
   ]
   for_each = fileset("../workflows", "**/workflow.json")
   name             = "workflow.json"
-  path             = split("/", each.value)[0]
+  path             = "site/wwwroot/${split("/", each.value)[0]}"
   storage_share_id = data.azurerm_storage_share.share.id
   source           = "../workflows/${each.value}"
 }
