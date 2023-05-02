@@ -125,7 +125,7 @@ resource "azurerm_storage_share_file" "example" {
 
 resource "azurerm_storage_share_directory" "workflows" {
   for_each = fileset("../workflows", "**/workflow.json")
-  name             = each.value
+  name             = split("/", each.value)[0]
   storage_account_name = data.azurerm_storage_share.share.storage_account_name
   share_name = data.azurerm_storage_share.share.name
 }
