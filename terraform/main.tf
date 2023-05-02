@@ -2,11 +2,15 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "=3.29.1"
+      version = "=3.53.0"
     }
     random = {
       source  = "hashicorp/random"
       version = "=3.1.0"
+    }
+    azapi = {
+      source  = "azure/azapi"
+      version = "1.5.0"
     }
   }
   backend "azurerm" {
@@ -25,7 +29,7 @@ provider "azurerm" {
 }
 
 locals {
-  name = "func${random_string.unique.result}"
+  la_name = "la${var.unique}"
   loc_for_naming = lower(replace(var.location, " ", ""))
   gh_repo = replace(var.gh_repo, "implodingduck/", "")
   tags = {
@@ -52,6 +56,68 @@ data "azurerm_resource_group" "rg" {
   name = "rg-logicapp-infra-${var.environment}-${var.unique}-${local.loc_for_naming}"
 }
 
+data "azurerm_logic_app_standard" "example" {
+  name                = "la-${local.la_name}"
+  resource_group_name = data.azurerm_resource_group.rg.name
+}
+
+data "azurerm_eventhub_namespace" "ehn" {
+  name                = "ehn${local.la_name}${var.environment}"
+  resource_group_name = data.azurerm_resource_group.rg.name
+}
+
+
+data "azurerm_eventhub" "eh" {
+  name                = "eh${local.la_name}${var.environment}"
+  resource_group_name = data.azurerm_resource_group.rg.name
+  namespace_name      = data.azurerm_eventhub_namespace.ehn.name
+}
+
+
+
+data "azapi_resource" "appsettings" {
+  type                   = "Microsoft.Web/sites/config@2022-03-01"
+  parent_id              = data.azurerm_logic_app_standard.example.id
+  name                   = "appsettings"
+  response_export_values = ["*"]
+}
+
+
+data "azapi_resource_action" "list" {
+  type                   = "Microsoft.Web/sites/config@2022-03-01"
+  resource_id            = data.azapi_resource.appsettings.id
+  action                 = "list"
+  method                 = "POST"
+  response_export_values = ["*"]
+}
+
+# resource "azapi_resource_action" "update" {
+#   type        = "Microsoft.Web/sites/config@2022-03-01"
+#   resource_id = data.azapi_resource.appsettings.id
+#   method      = "PUT"
+#   body = jsonencode({
+#     name = "appsettings"
+#     // use merge function to combine new settings with existing ones
+#     properties = merge(
+#       jsondecode(data.azapi_resource_action.list.output).properties,
+#       {
+#         "eventHub_fullyQualifiedNamespace" = "ehn${local.la_name}${var.environment}.servicebus.windows.net"
+#       }
+#     )
+#   })
+#   response_export_values = ["*"]
+# }
+
+resource "azurerm_app_service_connection" "example" {
+  name               = "ehconn"
+  app_service_id     = data.azurerm_logic_app_standard.example.id
+  target_resource_id = data.azurerm_eventhub.eh.id
+  authentication {
+    type = "systemAssignedIdentity"
+  }
+}
+
 output "resourcegrouptags" {
   value = data.azurerm_resource_group.rg.tags
 }
+
