@@ -122,3 +122,20 @@ resource "azurerm_storage_share_file" "example" {
   storage_share_id = data.azurerm_storage_share.share.id
   source           = "../workflows/connections.json"
 }
+
+resource "azurerm_storage_share_directory" "workflows" {
+  for_each = fileset("../workflows", "**/workflow.json")
+  name             = each.value
+  storage_account_name = data.azurerm_storage_share.share.storage_account_name
+  share_name = data.azurerm_storage_share.share.name
+}
+
+resource "azurerm_storage_share_file" "workflows" {
+  depends_on = [
+    azurerm_storage_share_directory.workflows
+  ]
+  for_each = fileset("../workflows", "**/workflow.json")
+  name             = each.value
+  storage_share_id = data.azurerm_storage_share.share.id
+  source           = "../workflows/${each.value}"
+}
