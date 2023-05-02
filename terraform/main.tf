@@ -111,7 +111,7 @@ data "azapi_resource_action" "list" {
 resource "azurerm_app_service_connection" "example" {
   name               = "ehconn"
   app_service_id     = data.azurerm_logic_app_standard.example.id
-  target_resource_id = data.azurerm_eventhub.eh.id
+  target_resource_id = data.azurerm_eventhub_namespace.ehn.id
   authentication {
     type = "systemAssignedIdentity"
   }
