@@ -1,0 +1,49 @@
+{
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+      "Response": {
+        "inputs": {
+          "body": "Message sent to the Event Hub",
+          "statusCode": 200
+        },
+        "kind": "http",
+        "runAfter": {
+          "Send_Event": [
+            "Succeeded"
+          ]
+        },
+        "type": "Response"
+      },
+      "Send_Event": {
+        "inputs": {
+          "parameters": {
+            "eventData": {
+              "contentData": {
+                "message": "Hello from the logic app... @{timeutcNow()}"
+              }
+            },
+            "eventHubName": "ehla3ad8bqiosandbox "
+          },
+          "serviceProviderConfiguration": {
+            "connectionName": "eventHub",
+            "operationId": "sendEvent",
+            "serviceProviderId": "/serviceProviders/eventHub"
+          }
+        },
+        "runAfter": {},
+        "type": "ServiceProvider"
+      }
+    },
+    "contentVersion": "1.0.0.0",
+    "outputs": {},
+    "triggers": {
+      "manual": {
+        "inputs": {},
+        "kind": "Http",
+        "type": "Request"
+      }
+    }
+  },
+  "kind": "Stateful"
+}

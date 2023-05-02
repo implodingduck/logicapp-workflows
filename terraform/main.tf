@@ -56,6 +56,11 @@ data "azurerm_resource_group" "rg" {
   name = "rg-logicapp-infra-${var.environment}-${var.unique}-${local.loc_for_naming}"
 }
 
+data "azurerm_storage_share" "share" {
+  name                 = "la-${local.la_name}-content"
+  storage_account_name = "sa${local.la_name}"
+}
+
 data "azurerm_logic_app_standard" "example" {
   name                = "la-${local.la_name}"
   resource_group_name = data.azurerm_resource_group.rg.name
@@ -108,16 +113,12 @@ resource "azapi_resource_action" "update" {
   response_export_values = ["*"]
 }
 
-resource "azurerm_app_service_connection" "example" {
-  name               = "ehconn"
-  app_service_id     = data.azurerm_logic_app_standard.example.id
-  target_resource_id = data.azurerm_eventhub_namespace.ehn.id
-  authentication {
-    type = "systemAssignedIdentity"
-  }
-}
-
 output "resourcegrouptags" {
   value = data.azurerm_resource_group.rg.tags
 }
 
+resource "azurerm_storage_share_file" "example" {
+  name             = "connections.json"
+  storage_share_id = data.azurerm_storage_share.share.id
+  source           = "workflows/connections.json"
+}

@@ -1,0 +1,17 @@
+{
+  "serviceProviderConnections": {
+    "eventHub": {
+      "parameterValues": {
+        "fullyQualifiedNamespace": "@appsetting('eventHub_fullyQualifiedNamespace')",
+        "authProvider": {
+          "Type": "ManagedServiceIdentity"
+        }
+      },
+      "serviceProvider": {
+        "id": "/serviceProviders/eventHub"
+      },
+      "displayName": "ehconn"
+    }
+  },
+  "managedApiConnections": {}
+}

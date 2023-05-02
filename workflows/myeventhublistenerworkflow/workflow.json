@@ -1,0 +1,26 @@
+{
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {},
+    "contentVersion": "1.0.0.0",
+    "outputs": {},
+    "triggers": {
+      "When_events_are_available_in_Event_hub": {
+        "inputs": {
+          "parameters": {
+            "consumerGroup": "$Default",
+            "eventHubName": "ehla3ad8bqiosandbox "
+          },
+          "serviceProviderConfiguration": {
+            "connectionName": "eventHub",
+            "operationId": "receiveEvents",
+            "serviceProviderId": "/serviceProviders/eventHub"
+          }
+        },
+        "splitOn": "@triggerOutputs()?['body']",
+        "type": "ServiceProvider"
+      }
+    }
+  },
+  "kind": "Stateful"
+}
