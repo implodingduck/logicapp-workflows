@@ -135,7 +135,8 @@ resource "azurerm_storage_share_file" "workflows" {
     azurerm_storage_share_directory.workflows
   ]
   for_each = fileset("../workflows", "**/workflow.json")
-  name             = each.value
+  name             = "workflow.json"
+  path             = split("/", each.value)[0]
   storage_share_id = data.azurerm_storage_share.share.id
   source           = "../workflows/${each.value}"
 }
