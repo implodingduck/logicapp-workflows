@@ -119,7 +119,7 @@ output "resourcegrouptags" {
 
 resource "azurerm_storage_share_file" "example" {
   name             = "connections.json"
-  path             = "site/wwwroot/"
+  path             = "site/wwwroot"
   storage_share_id = data.azurerm_storage_share.share.id
   source           = "../workflows/connections.json"
 }
