@@ -107,6 +107,7 @@ resource "azapi_resource_action" "update" {
       jsondecode(data.azapi_resource_action.list.output).properties,
       {
         "eventHub_fullyQualifiedNamespace" = "ehn${local.la_name}${var.environment}.servicebus.windows.net"
+        "eventHub_name" = "eh${local.la_name}${var.environment}"
       }
     )
   })
