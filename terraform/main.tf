@@ -141,4 +141,5 @@ resource "azurerm_storage_share_file" "workflows" {
   path             = "site/wwwroot/${split("/", each.value)[0]}"
   storage_share_id = data.azurerm_storage_share.share.id
   source           = "../workflows/${each.value}"
+  content_md5      = filemd5("../workflows/${each.value}")
 }
