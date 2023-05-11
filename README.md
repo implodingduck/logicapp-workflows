@@ -1,7 +1,9 @@
-# base-repo
-Please setup the following secrets:
+# logicapp-workflows
+* This repository is for creating the Logic App Workflows. For Infrastructure please look at [logicapp-workflows](https://github.com/implodingduck/logicapp-infra)
+* Logic App Workflows Repository that creates the following items:
+  * Workflows
+  * Connections
+  
 
-* AZURE_CLIENT_ID
-* AZURE_SUBSCRIPTION_ID
-* AZURE_TENANT_ID
-* KV_NAME
+![picture of what the terraform in this repo creates](./logicapp-lifecycle.png)
+
