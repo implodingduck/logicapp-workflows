@@ -126,6 +126,7 @@ resource "azurerm_storage_share_file" "example" {
   path             = "site/wwwroot"
   storage_share_id = data.azurerm_storage_share.share.id
   source           = "../workflows/connections.json"
+  content_md5      = filemd5("../workflows/${each.value}")
 }
 
 resource "azurerm_storage_share_directory" "workflows" {
