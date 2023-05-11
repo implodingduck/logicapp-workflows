@@ -11,6 +11,15 @@
         "id": "/serviceProviders/eventHub"
       },
       "displayName": "ehconn"
+    },
+    "AzureCosmosDB": {
+      "parameterValues": {
+        "connectionString": "@appsetting('AzureCosmosDB_connectionString')"
+      },
+      "serviceProvider": {
+        "id": "/serviceProviders/AzureCosmosDB"
+      },
+      "displayName": "cosmosconn"
     }
   },
   "managedApiConnections": {}

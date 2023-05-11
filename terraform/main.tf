@@ -108,6 +108,9 @@ resource "azapi_resource_action" "update" {
       {
         "eventHub_fullyQualifiedNamespace" = "ehn${local.la_name}${var.environment}.servicebus.windows.net"
         "eventHub_name" = "eh${local.la_name}${var.environment}"
+        "AzureCosmosDB_connectionString" = "@Microsoft.KeyVault(VaultName=kv-${local.la_name};SecretName=cosmosdbconn)"
+        "cosmosdb_containerId" = local.la_name 
+        "cosmosdb_databaseId" = "sql${local.la_name}" 
       }
     )
   })
