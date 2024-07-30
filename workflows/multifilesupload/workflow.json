@@ -1,0 +1,163 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "For_each_1": {
+                "actions": {
+                    "Append_to_array_variable": {
+                        "inputs": {
+                            "name": "filesarr",
+                            "value": {
+                                "disposition": "@body('Parse_JSON')?['headers']?['Content-Disposition']",
+                                "filecontent": "@decodeBase64(body('Parse_JSON')?['body']?['$content'])"
+                            }
+                        },
+                        "runAfter": {
+                            "Parse_JSON": [
+                                "Succeeded"
+                            ]
+                        },
+                        "type": "AppendToArrayVariable"
+                    },
+                    "Parse_JSON": {
+                        "inputs": {
+                            "content": "@items('For_each_1')",
+                            "schema": {
+                                "properties": {
+                                    "body": {
+                                        "properties": {
+                                            "$content": {
+                                                "type": "string"
+                                            },
+                                            "$content-type": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "type": "object"
+                                    },
+                                    "headers": {
+                                        "properties": {
+                                            "Content-Disposition": {
+                                                "type": "string"
+                                            },
+                                            "Content-Length": {
+                                                "type": "string"
+                                            },
+                                            "Content-Type": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "type": "ParseJson"
+                    }
+                },
+                "foreach": "@triggerBody()?['$multipart']",
+                "runAfter": {
+                    "Initialize_variable": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Foreach"
+            },
+            "Initialize_variable": {
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "filesarr",
+                            "type": "array"
+                        }
+                    ]
+                },
+                "runAfter": {},
+                "type": "InitializeVariable"
+            },
+            "Response": {
+                "inputs": {
+                    "body": "Hello from Logic App!\n\nFilesArr:\n@{variables('filesarr')}\n\n",
+                    "statusCode": 200
+                },
+                "kind": "Http",
+                "runAfter": {
+                    "For_each_1": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Response"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {},
+        "parameters": {
+            "$connections": {
+                "defaultValue": {},
+                "type": "Object"
+            }
+        },
+        "triggers": {
+            "When_a_HTTP_request_is_received": {
+                "inputs": {
+                    "schema": {
+                        "properties": {
+                            "$content": {
+                                "type": "string"
+                            },
+                            "$content-type": {
+                                "type": "string"
+                            },
+                            "$multipart": {
+                                "items": {
+                                    "properties": {
+                                        "body": {
+                                            "properties": {
+                                                "$content": {
+                                                    "type": "string"
+                                                },
+                                                "$content-type": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "headers": {
+                                            "properties": {
+                                                "Content-Disposition": {
+                                                    "type": "string"
+                                                },
+                                                "Content-Length": {
+                                                    "type": "string"
+                                                },
+                                                "Content-Type": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "required": [
+                                        "headers",
+                                        "body"
+                                    ],
+                                    "type": "object"
+                                },
+                                "type": "array"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "kind": "Http",
+                "type": "Request"
+            }
+        }
+    },
+    "parameters": {
+        "$connections": {
+            "value": {}
+        }
+    }
+}
